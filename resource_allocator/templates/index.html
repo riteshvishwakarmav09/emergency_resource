@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Allocator — Emergency Resource Management</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- CDN FontAwesome fallback + Inline SVG support -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <!-- Leaflet GIS Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- App Styling (Direct static path for both Flask and file:// support) -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="dark-theme">
+
+    <!-- Top Command Header Bar -->
+    <header class="app-header">
+        <div class="brand-logo">
+            <div class="brand-icon">
+                <!-- Embedded Standalone SVG Logo -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <span class="title">THE <span>ALLOCATOR</span></span>
+                <span class="subtitle">Emergency Resource System</span>
+            </div>
+        </div>
+
+        <!-- Live Status Ticker Bar -->
+        <div class="live-ticker">
+            <span class="pulse-dot"></span>
+            <span class="ticker-text" id="liveTickerText">System Active • 2 Incidents • Vault Secured</span>
+        </div>
+
+        <!-- User Role Profile & System Auth -->
+        <div class="user-controls">
+            <div class="role-badge" id="roleBadge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span id="userRoleText">{{ user.role }}</span>
+            </div>
+            <span class="user-name" id="userNameText">{{ user.full_name }}</span>
+            <button class="btn btn-outline btn-sm" id="btnSwitchRole">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="17 1 21 5 17 9"></polyline>
+                    <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                    <polyline points="7 23 3 19 7 15"></polyline>
+                    <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                </svg>
+                Switch Role
+            </button>
+        </div>
+    </header>
+
+    <!-- Main App Layout -->
+    <div class="app-container">
+
+        <!-- Left Navigation Sidebar -->
+        <aside class="app-sidebar">
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-tab="tab-dashboard">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    Dashboard
+                </button>
+                <button class="nav-btn" data-tab="tab-recommendations">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    Decision Support
+                    <span class="badge" id="recBadgeCount">2</span>
+                </button>
+                <button class="nav-btn" data-tab="tab-resources">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Resource Vault
+                </button>
+                <button class="nav-btn" data-tab="tab-categories">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Categories
+                </button>
+                <button class="nav-btn" data-tab="tab-audit">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Audit Logs
+                </button>
+                <button class="nav-btn" data-tab="tab-backups">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                    </svg>
+                    Backups
+                </button>
+            </nav>
+
+            <div class="encryption-status-card">
+                <div class="card-header-sm">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>AES-256 Storage</span>
+                </div>
+                <p class="status-detail">Encrypted payload storage active.</p>
+            </div>
+        </aside>
+
+        <!-- Right Content Main Stage -->
+        <main class="app-main-content">
+
+            <!-- TAB 1: COMMAND DASHBOARD -->
+            <section id="tab-dashboard" class="tab-pane active">
+                <div class="section-title-bar">
+                    <h2>Dashboard Overview</h2>
+                    <button class="btn btn-primary" id="btnDeclareIncident">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Declare Incident
+                    </button>
+                </div>
+
+                <!-- KPI Metric Cards with standalone SVG icons -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                        </div>
+                        <div class="metric-data">
+                            <span class="metric-label">Active Incidents</span>
+                            <span class="metric-value" id="statActiveIncidents">2</span>
+                            <span class="metric-sub">1 Critical</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                        <div class="metric-data">
+                            <span class="metric-label">Total Inventory</span>
+                            <span class="metric-value" id="statTotalStock">670</span>
+                            <span class="metric-sub">4 Depots</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="3" width="15" height="13"></rect>
+                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                            </svg>
+                        </div>
+                        <div class="metric-data">
+                            <span class="metric-label">Dispatches</span>
+                            <span class="metric-value" id="statDispatches">0</span>
+                            <span class="metric-sub">Tracking Ready</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                <polyline points="9 11 12 14 22 4"></polyline>
+                            </svg>
+                        </div>
+                        <div class="metric-data">
+                            <span class="metric-label">Audit Log Integrity</span>
+                            <span class="metric-value">100%</span>
+                            <span class="metric-sub">Verified</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Split View: GIS Map + Crisis Feed -->
+                <div class="dashboard-grid">
+                    <div class="map-container-card">
+                        <div class="card-header">
+                            <h3>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                                    <line x1="8" y1="2" x2="8" y2="18"></line>
+                                    <line x1="16" y1="6" x2="16" y2="22"></line>
+                                </svg>
+                                Response Map
+                            </h3>
+                            <div class="map-legend">
+                                <span class="legend-item"><span class="dot dot-depot"></span> Depots</span>
+                                <span class="legend-item"><span class="dot dot-incident"></span> Incidents</span>
+                            </div>
+                        </div>
+                        <div id="gisMap" class="gis-map-viewport"></div>
+                    </div>
+
+                    <div class="incidents-feed-card">
+                        <div class="card-header">
+                            <h3>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                </svg>
+                                Active Incidents
+                            </h3>
+                        </div>
+                        <div class="incident-list-container" id="incidentListFeed">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: DECISION ENGINE -->
+            <section id="tab-recommendations" class="tab-pane">
+                <div class="section-title-bar">
+                    <h2>Decision Support Engine</h2>
+                </div>
+
+                <!-- Incident Selector Bar -->
+                <div class="incident-selector-bar">
+                    <label for="selectRecIncident">Select Incident:</label>
+                    <select id="selectRecIncident" class="form-control select-dark"></select>
+                    <button class="btn btn-primary" id="btnRefreshRecs">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                        Run Analysis
+                    </button>
+                </div>
+
+                <!-- Decision Support Cards Container -->
+                <div id="recommendationResultsContainer">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- What-If Scenario Simulator Section -->
+                <div class="simulator-card mt-4">
+                    <div class="card-header">
+                        <h3>Scenario Simulator</h3>
+                    </div>
+                    <div class="simulator-controls">
+                        <div class="form-group">
+                            <label>Scenario Type</label>
+                            <select id="simScenarioType" class="form-control select-dark">
+                                <option value="Earthquake">Magnitude 8.0 Earthquake</option>
+                                <option value="Flood">Storm Surge & Flood</option>
+                                <option value="Wildfire">Forest Wildfire</option>
+                                <option value="Epidemic">Bio-Hazard Outbreak</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Severity Multiplier</label>
+                            <input type="range" id="simSeverity" min="1.0" max="3.0" step="0.1" value="1.5" class="slider-dark">
+                            <span id="simSeverityValue" class="badge">1.5x Load</span>
+                        </div>
+                        <button class="btn btn-outline" id="btnRunSimulation">
+                            Run Simulation
+                        </button>
+                    </div>
+                    <div id="simulationOutput" class="simulation-output-area"></div>
+                </div>
+            </section>
+
+            <!-- TAB 3: RESOURCE VAULT -->
+            <section id="tab-resources" class="tab-pane">
+                <div class="section-title-bar">
+                    <h2>Resource Inventory</h2>
+                    <div class="vault-controls">
+                        <button class="btn btn-outline" id="btnToggleDecrypt">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 2l-2 2m-2 2l-2 2m2-2l2 2m-2-2l-6.5 6.5a1 1 0 0 0-.3.7V17h3.3a1 1 0 0 0 .7-.3L17 11.5M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"></path>
+                            </svg>
+                            <span id="lblDecryptToggle">Decrypt Sensitive Fields</span>
+                        </button>
+                        <button class="btn btn-primary" id="btnAddResource">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add Resource
+                        </button>
+                    </div>
+                </div>
+
+                <div class="vault-notice" id="vaultAuthNotice">
+                    Sensitive fields encrypted with AES-256. Decryption requires Admin or Dispatcher session.
+                </div>
+
+                <!-- Resources Table -->
+                <div class="table-card">
+                    <table class="custom-table" id="resourcesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Resource Name</th>
+                                <th>Category</th>
+                                <th>Depot</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Encrypted Specs</th>
+                                <th>Storage Location</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resourcesTbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 4: CATEGORY MANAGER -->
+            <section id="tab-categories" class="tab-pane">
+                <div class="section-title-bar">
+                    <h2>Resource Categories</h2>
+                    <button class="btn btn-primary" id="btnCreateCategory">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Category
+                    </button>
+                </div>
+
+                <div class="category-grid" id="categoryGrid">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 5: AUDIT ACCESS LOGS -->
+            <section id="tab-audit" class="tab-pane">
+                <div class="section-title-bar">
+                    <h2>Audit Access Logs</h2>
+                    <button class="btn btn-outline" id="btnExportAuditLogs">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Export Logs (.JSON)
+                    </button>
+                </div>
+
+                <div class="table-card">
+                    <table class="custom-table" id="auditLogsTable">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Actor</th>
+                                <th>Role</th>
+                                <th>Action</th>
+                                <th>Target</th>
+                                <th>IP Address</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditLogsTbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 6: BACKUPS -->
+            <section id="tab-backups" class="tab-pane">
+                <div class="section-title-bar">
+                    <h2>Backups & Restoration</h2>
+                    <button class="btn btn-primary" id="btnCreateBackup">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Create Backup
+                    </button>
+                </div>
+
+                <div class="backup-grid">
+                    <div class="backup-card">
+                        <h3>Downloadable Backups</h3>
+                        <p class="text-sub">Encrypted .bak snapshot files with HMAC verification.</p>
+                        <div class="backup-list" id="backupList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="backup-card">
+                        <h3>Restore System State</h3>
+                        <p class="text-sub">Upload an encrypted backup snapshot to restore system state.</p>
+                        <form id="restoreBackupForm" class="restore-form">
+                            <div class="form-group">
+                                <input type="file" id="backupFileInput" accept=".bak,.json" class="form-control file-input-dark" required>
+                            </div>
+                            <button type="submit" class="btn btn-outline w-100">
+                                Verify & Restore State
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Modal 1: Switch Role -->
+    <div class="modal-overlay" id="modalAuth">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Switch User Role</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="role-selector-options">
+                    <div class="role-option-card active" data-username="admin" data-pass="admin123">
+                        <div class="role-info">
+                            <strong>Admin (Sarah Vance)</strong>
+                            <span>Full access: Vault Decryption, Backups, Categories, Logs.</span>
+                        </div>
+                    </div>
+
+                    <div class="role-option-card" data-username="dispatcher" data-pass="dispatcher123">
+                        <div class="role-info">
+                            <strong>Dispatcher (Marcus Kane)</strong>
+                            <span>Incidents, Recommendations, Vault Decryption.</span>
+                        </div>
+                    </div>
+
+                    <div class="role-option-card" data-username="field" data-pass="field123">
+                        <div class="role-info">
+                            <strong>Field Officer (Elena Rostova)</strong>
+                            <span>View-only permissions.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary w-100" id="btnConfirmRoleSwitch">Activate Role</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Declare Incident -->
+    <div class="modal-overlay" id="modalIncident">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Declare Incident</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="formAddIncident">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="incTitle" class="form-control" placeholder="e.g. Major Highway Spill" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select id="incType" class="form-control select-dark">
+                                <option value="Earthquake">Earthquake</option>
+                                <option value="Flood">Flood</option>
+                                <option value="Wildfire">Wildfire</option>
+                                <option value="HAZMAT">HAZMAT Leak</option>
+                                <option value="Blackout">Power Failure</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Severity</label>
+                            <select id="incSeverity" class="form-control select-dark">
+                                <option value="CRITICAL">CRITICAL</option>
+                                <option value="HIGH">HIGH</option>
+                                <option value="MEDIUM">MEDIUM</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Sector</label>
+                            <select id="incSector" class="form-control select-dark">
+                                <option value="North Sector">North Sector</option>
+                                <option value="East Sector">East Sector</option>
+                                <option value="South Sector">South Sector</option>
+                                <option value="West Sector">West Sector</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Affected Population</label>
+                            <input type="number" id="incPopulation" class="form-control" value="15000" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="incDesc" class="form-control" rows="2" placeholder="Brief situational description..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary w-100">Broadcast Incident</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Add Resource -->
+    <div class="modal-overlay" id="modalResource">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Resource</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="formAddResource">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Resource Name</label>
+                        <input type="text" id="resName" class="form-control" placeholder="e.g. Water Filtration Skid" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="resCategory" class="form-control select-dark" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Depot</label>
+                            <select id="resDepot" class="form-control select-dark" required></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input type="number" id="resQty" class="form-control" value="25" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Min Safety Reserve</label>
+                            <input type="number" id="resReserve" class="form-control" value="5" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Sensitive Specifications (Encrypted AES-256)</label>
+                        <input type="text" id="resSpecs" class="form-control" placeholder="e.g. Serial #881-A calibration data" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Storage Location Code (Encrypted AES-256)</label>
+                        <input type="text" id="resLocation" class="form-control" placeholder="e.g. Depot-Alpha Locker #3" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary w-100">Save Resource</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Category -->
+    <div class="modal-overlay" id="modalCategory">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Category</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="formCategory">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Category Name</label>
+                        <input type="text" id="catName" class="form-control" placeholder="e.g. Hazardous Spill Recovery" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="catDesc" class="form-control" rows="2" placeholder="Category scope..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Icon</label>
+                            <select id="catIcon" class="form-control select-dark">
+                                <option value="medkit">Medkit</option>
+                                <option value="truck">Truck</option>
+                                <option value="zap">Power</option>
+                                <option value="droplet">Water</option>
+                                <option value="flame">Fire</option>
+                                <option value="home">Shelter</option>
+                                <option value="users">Personnel</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority Weight (0.1 - 1.0)</label>
+                            <input type="number" id="catWeight" step="0.05" min="0.1" max="1.0" class="form-control" value="0.9" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary w-100">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toasts -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- JS Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/recommendation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+{
+  "users": [
+    {
+      "id": "USR-001",
+      "username": "admin",
+      "full_name": "Commander Sarah Vance",
+      "role": "Admin",
+      "password_hash": "6b99ac1e064f077c40f3a50f1cc843905ef4b85f31142381aa37eb090e1ecadc",
+      "salt": "26fe0c84e611a5bdc2f5f5799f2c5ca6"
+    },
+    {
+      "id": "USR-002",
+      "username": "dispatcher",
+      "full_name": "Ops Dispatcher Marcus Kane",
+      "role": "Dispatcher",
+      "password_hash": "2aedd4f3992e7f4593e327d42fd00a735264883bff7f80fe5a19cc35a80b4ac6",
+      "salt": "483c6bde83d012bbcc8168e1006bb3b1"
+    },
+    {
+      "id": "USR-003",
+      "username": "field",
+      "full_name": "Field Captain Elena Rostova",
+      "role": "Field Officer",
+      "password_hash": "23d0aceac8b18034b2fd563bb869219751eadd29c8d71b68633c6c97c3e96333",
+      "salt": "a9c67762d43cbe952ef110ab122d5568"
+    }
+  ],
+  "categories": [
+    {
+      "id": "CAT-001",
+      "name": "Medical & Trauma",
+      "description": "Emergency surgery kits, blood plasma, ventilators, life support",
+      "icon": "medkit",
+      "priority_weight": 1.0
+    },
+    {
+      "id": "CAT-002",
+      "name": "Rescue & Fleet Vehicles",
+      "description": "Ambulances, off-road rescue trucks, helicopters, motorized boats",
+      "icon": "truck",
+      "priority_weight": 0.9
+    },
+    {
+      "id": "CAT-003",
+      "name": "Power & Energy",
+      "description": "High-output diesel generators, battery banks, solar arrays",
+      "icon": "zap",
+      "priority_weight": 0.85
+    },
+    {
+      "id": "CAT-004",
+      "name": "Water & Rations",
+      "description": "Water purifiers, bottled water packs, field food rations",
+      "icon": "droplet",
+      "priority_weight": 0.8
+    },
+    {
+      "id": "CAT-005",
+      "name": "HAZMAT & Firefighting",
+      "description": "Chemical suits, thermal detectors, foam sprayers",
+      "icon": "flame",
+      "priority_weight": 0.95
+    },
+    {
+      "id": "CAT-006",
+      "name": "Shelter & Sanitation",
+      "description": "Inflatable triage tents, thermal blankets, portable sanitation",
+      "icon": "home",
+      "priority_weight": 0.7
+    },
+    {
+      "id": "CAT-007",
+      "name": "Specialized Personnel",
+      "description": "Trauma surgeons, USAR search rescue units, K9 units",
+      "icon": "users",
+      "priority_weight": 0.95
+    }
+  ],
+  "depots": [
+    {
+      "id": "DEP-001",
+      "name": "Central Command Depot Alpha",
+      "sector": "North Sector",
+      "lat": 34.0522,
+      "lng": -118.2437,
+      "contact": "Depot Admin A"
+    },
+    {
+      "id": "DEP-002",
+      "name": "Logistics Hub Bravo",
+      "sector": "East Sector",
+      "lat": 34.0812,
+      "lng": -118.15,
+      "contact": "Depot Admin B"
+    },
+    {
+      "id": "DEP-003",
+      "name": "Coastal Response Station Charlie",
+      "sector": "South Sector",
+      "lat": 33.95,
+      "lng": -118.39,
+      "contact": "Depot Admin C"
+    },
+    {
+      "id": "DEP-004",
+      "name": "Mountain Operations Hub Delta",
+      "sector": "West Sector",
+      "lat": 34.15,
+      "lng": -118.45,
+      "contact": "Depot Admin D"
+    }
+  ],
+  "resources": [
+    {
+      "id": "RES-101",
+      "name": "Mobile ICU Ventilators",
+      "category_id": "CAT-001",
+      "depot_id": "DEP-001",
+      "quantity": 24,
+      "min_reserve": 5,
+      "unit": "Units",
+      "status": "Available",
+      "sensitive_specs": "gAAAAABqjbpwEScnFLxRY8Lem6svphdfHFuVbNY-ycYvoKnMDk8BeOodTuruLUFyyF8ZjA_mzqK-qvFiPUTwjVsOD9jQPHNERSD9xQ754XbBFE9-jpTOyRY73JSI2BBIxz2DQ6D3T35eUz7WZRVlTWdupgshD0NKLZ0Bbowq-ZaFW6DXPd2dsHQ=",
+      "secure_location_code": "gAAAAABqjbpwq-bl1nCr7ctxzCeOXWr8UEClgu73PNIecwW7fdWdswUPn005a2cOrDm2MwWkOBZEgm2mZircdFn8nV9VGKFWSf7QR9qAx1fMG-5NnxI1GR0="
+    },
+    {
+      "id": "RES-102",
+      "name": "Trauma Surgical Kits & Plasma",
+      "category_id": "CAT-001",
+      "depot_id": "DEP-002",
+      "quantity": 120,
+      "min_reserve": 30,
+      "unit": "Kits",
+      "status": "Available",
+      "sensitive_specs": "gAAAAABqjbpwBmzRAOtNA9_JQ2VP_l_iQFQJMhe40OIbNiKvE2Ba_mCBz_eTHilG3xiqM26DdhHeYlGlOQ7TdU6BYDlZSm9PSeTWbehos8G2pUTbPZIQTNuhrczkGcnxNAKJQYzDrZZ0G01ZtLfvezfp19AT_236IPaUwpVLF82XYpLrtuDqKaI=",
+      "secure_location_code": "gAAAAABqjbpwNMjobjEmpxQo89pjvFRFlWwr00njsiKiJTkFEUW4Wj0Ukpqcu65rqn4aBkdCpw2JTgHBHx_dX_htBo2Yqy1ucg=="
+    },
+    {
+      "id": "RES-103",
+      "name": "Heavy Off-Road Rescue Vehicles",
+      "category_id": "CAT-002",
+      "depot_id": "DEP-001",
+      "quantity": 8,
+      "min_reserve": 2,
+      "unit": "Vehicles",
+      "status": "Available",
+      "sensitive_specs": "gAAAAABqjbpw1mnz-9a9L77c2e3xX02zj6cTVyRGSZL4IVn01ZnQUuvIaTaP1WOzpUxyeulAhYqMhTwmkMKP9bVLOKd8hUKFGVWgPtp2FGHtgYOfNya1iO5A9ut51fEceVzGP1VAmpqsnOTIAweHklvPA0mU51hD_g==",
+      "secure_location_code": "gAAAAABqjbpw8iScPHaV3-9xoI8gnxMhERFVw3yVZnmx2TTlcWKlCL2lbBfip0nDhqw5sXpNzy5VoeAe8fju3H-sJkiAy1c_4w=="
+    },
+    {
+      "id": "RES-104",
+      "name": "Air Transport Helicopter (MedEvac)",
+      "category_id": "CAT-002",
+      "depot_id": "DEP-004",
+      "quantity": 3,
+      "min_reserve": 1,
+      "unit": "Aircraft",
+      "status": "Available",
+      "sensitive_specs": "gAAAAABqjbpwA4fshpEhCg-mvaoPRYKXzDA9wvoqP1VTji3l1fuBsOpt70O9PeK-Sv2eGIKXOzgXQl6ErG7hVzhROMmbWBU3wM7_Ics9MOsajPgtCppk08NL60yhNx1nzo7XaGlTa0vbBS9IalGYtXL90MiLzPI5TsafULKNKlhlX1Vm4NlbLoo=",
+      "secure_location_code": "gAAAAABqjbpwMxtbkPcx-ydi5U5Aqd1CbVDoWP1kv_EDIhqg6XUeiAqKToiExxP7PS7N___OwneMV2GCKrZTitLECzn5cg33Nw=="
+    },
+    {
+      "id": "RES-105",
+      "name": "500kW Heavy Diesel Generators",
+      "category_id": "CAT-003",
+      "depot_id": "DEP-002",
+      "quantity": 4,
+      "min_reserve": 3,
+      "unit": "Units",
+      "status": "Available",
+      "sensitive_specs": "gAAAAABqjbpwgwCqn4BhkEd0QNS2BUCJwrlpV7zsbBf_48KnI6GdTkLWO3nqjipweADZHxyN-Tn2OtAnp7vN6Q_nq3Slc6uepVMErJYrSktrLtVuAV0Aaqy8_xT6qOBbyV-HTqEG2chmjK2yigEB9fXKtMbd1aLLIw==",
+      "secure_location_code": "gAAAAABqjbpwkgJ08DgKlLUOzWgadxZAg2JJinDHLAVQeJssZnwBMQ4ZIKo_iUWM-bq7vC0aTFP9ZnxqLkame1LIoPIRUh9uRQ=="
+    },
+    {
+      "id": "RES-106",
+      "name": "High-Volume Water Purification Skids",
+      "category_id": "CAT-004",
+      "depot_id": "DEP-003",
+      "quantity": 18,
+      "min_reserve": 4,
+      "unit": "Systems",
+      "status": "Available",
+      "sensitive_specs": "gAAAAABqjbpwF9-Blrfg6ETWYK0uj7VAN-0te1ukp1-qZSRhL6VG8xcbz6mYwln-kqxhRhYEGXPQ8Gw66MfXKR9P9iVeIEu_pl2oQOPkDmvB6UzZqk235Assw2eUcDV1yNE7avJgyTP93Yb6szd0QpxpLRe2E4LwP-o3CNj4OXPkPd8WfBEhpz8=",
+      "secure_location_code": "gAAAAABqjbpwake2STk5IZ2AhGvLqfIVFX7ZrZNm-1Vf_SgqJ_PRXhuBhNKcBXIPW4Ccqzgv0ZjOkE60MfFo-RORFyXTZ824QA=="
+    },
+    {
+      "id": "RES-107",
+      "name": "HAZMAT Chem-Bio Protection Suits",
+      "category_id": "CAT-005",
+      "depot_id": "DEP-001",
+      "quantity": 300,
+      "min_reserve": 50,
+      "unit": "Suits",
+      "status": "Available",
+      "sensitive_specs": "gAAAAABqjbpwbAd3iBc_0pcpTwPU7iaUdr7Cwj9-eFUwt9-aRFA6jvVWwlCGTH6ADn4Tlga2zjN6PqmOnTUy-E0Q-EnR_Trm91a2TNCHeCYGo7xhsnLP3QkW9kEE3vUwYoOd-BR69o3p",
+      "secure_location_code": "gAAAAABqjbpwxp4hf0BJ1BLUF9U-_-5wL9Td1K9Dox8ukIKp6bDtrueWRDCSaEuO0ZIjV0jdfmvpEPt4R3ZaIq-zlx3qbwEK3JqLXYfQ2dxOP10KEQx16qg="
+    },
+    {
+      "id": "RES-108",
+      "name": "Rapid Deployment Field Triage Tents",
+      "category_id": "CAT-006",
+      "depot_id": "DEP-003",
+      "quantity": 10,
+      "min_reserve": 10,
+      "unit": "Structures",
+      "status": "Low Stock",
+      "sensitive_specs": "gAAAAABqjbpwwZKbacT26Pu9KBtYt3pY6191nqt72P4a8zT6Z7ZoPjle23wIPgqVONQ--LJiNF98ZIz2q7RCCCe-DEAyDw6po0Cz6pMzrZeWeQRRM3I38cm3hH4jpqq0Yn8f2KcNRvXX",
+      "secure_location_code": "gAAAAABqjbpwv4xJe858ogixPIcJiwyXyq8yseYzfTVbutuFtUsQU7xu8L-Vg5OYRLHZCwDRlmeG8pgQgdev109KD64NtAChYhUbwzNcf7FWSjhTDGrY0mc="
+    },
+    {
+      "id": "RES-109",
+      "name": "Urban Search & Rescue (USAR) Alpha Team",
+      "category_id": "CAT-007",
+      "depot_id": "DEP-001",
+      "quantity": 3,
+      "min_reserve": 3,
+      "unit": "Personnel",
+      "status": "Low Stock",
+      "sensitive_specs": "gAAAAABqjbpwkY0F0sk1vNfMBOxveNUo0KlhIcY41BzGoRjJ4vE9SX6QEYgOWcREMXWTYeXX7mwmA0QexjzVyqEsO94t9bI1iPCY6U-bbreQoANN50AQLBbALrXSzxvGrtRe309Zjsfwi97ad06JxIY1Al3M7ymJ8A==",
+      "secure_location_code": "gAAAAABqjbpwvGFOZNGszuyhVZCeYymDLe0l68s3eJnLJfrsYpK3p3teQd28oVHxUtYVCzg0Q7D8dY4JiLpGZH86oEYy8nrHlIeirf9xikSM5Qrckh-F1xI="
+    }
+  ],
+  "incidents": [
+    {
+      "id": "INC-801",
+      "title": "Magnitude 7.1 Earthquake - North Sector",
+      "type": "Earthquake",
+      "severity": "CRITICAL",
+      "urgency_score": 9.5,
+      "sector": "North Sector",
+      "lat": 34.07,
+      "lng": -118.25,
+      "affected_population": 45000,
+      "description": "Major structural collapse in urban zone. Municipal grid offline, local trauma center running on failing battery backup. High casualty risk.",
+      "required_needs": [
+        {
+          "category_id": "CAT-001",
+          "quantity": 15,
+          "name": "Mobile ICU Ventilators"
+        },
+        {
+          "category_id": "CAT-003",
+          "quantity": 4,
+          "name": "500kW Heavy Diesel Generators"
+        },
+        {
+          "category_id": "CAT-007",
+          "quantity": 10,
+          "name": "USAR Search Team"
+        },
+        {
+          "category_id": "CAT-006",
+          "quantity": 15,
+          "name": "Field Triage Tents"
+        }
+      ],
+      "status": "ACTIVE",
+      "created_at": "2026-08-25T21:23:20.025222"
+    },
+    {
+      "id": "INC-802",
+      "title": "Coastal Flash Flood & Drinking Water Contamination",
+      "type": "Flood",
+      "severity": "HIGH",
+      "urgency_score": 8.2,
+      "sector": "South Sector",
+      "lat": 33.93,
+      "lng": -118.38,
+      "affected_population": 22000,
+      "description": "Severe storm surge inundated water treatment plant. 22,000 residents without potable water. Floodwaters rising in low districts.",
+      "required_needs": [
+        {
+          "category_id": "CAT-004",
+          "quantity": 12,
+          "name": "Water Purification Skids"
+        },
+        {
+          "category_id": "CAT-002",
+          "quantity": 4,
+          "name": "Rescue Boats & Trucks"
+        }
+      ],
+      "status": "ACTIVE",
+      "created_at": "2026-08-25T21:23:20.025260"
+    },
+    {
+      "title": "the vehicle was not found ",
+      "type": "Blackout",
+      "severity": "HIGH",
+      "urgency_score": 8.0,
+      "sector": "South Sector",
+      "lat": 34.05,
+      "lng": -118.25,
+      "affected_population": 560,
+      "description": "vehicle might be stolen ",
+      "required_needs": [
+        {
+          "category_id": "CAT-001",
+          "quantity": 10,
+          "name": "Mobile ICU Ventilators & Plasma"
+        },
+        {
+          "category_id": "CAT-003",
+          "quantity": 3,
+          "name": "Heavy Generators"
+        }
+      ],
+      "id": "INC-1787673962231",
+      "status": "ACTIVE",
+      "created_at": "2026-08-25T21:36:02.231483"
+    },
+    {
+      "title": "there is one sink hole comes after havey rain ",
+      "type": "Flood",
+      "severity": "CRITICAL",
+      "urgency_score": 8.0,
+      "sector": "East Sector",
+      "lat": 34.05,
+      "lng": -118.25,
+      "affected_population": 350,
+      "description": "the rain does not stopped ",
+      "required_needs": [
+        {
+          "category_id": "CAT-001",
+          "quantity": 10,
+          "name": "Mobile ICU Ventilators & Plasma"
+        },
+        {
+          "category_id": "CAT-003",
+          "quantity": 3,
+          "name": "Heavy Generators"
+        }
+      ],
+      "id": "INC-1787674754209",
+      "status": "ACTIVE",
+      "created_at": "2026-08-25T21:49:14.209968"
+    }
+  ],
+  "dispatches": [
+    {
+      "incident_id": "INC-801",
+      "approved_by": "Commander Sarah Vance",
+      "allocated_items": {
+        "RES-102": 15,
+        "RES-105": 4,
+        "RES-109": 10,
+        "RES-108": 15
+      },
+      "details": [
+        "15x Trauma Surgical Kits & Plasma from Logistics Hub Bravo",
+        "4x 500kW Heavy Diesel Generators from Logistics Hub Bravo",
+        "10x Urban Search & Rescue (USAR) Alpha Team from Central Command Depot Alpha",
+        "15x Rapid Deployment Field Triage Tents from Coastal Response Station Charlie"
+      ],
+      "id": "DSP-1787674574416",
+      "dispatched_at": "2026-08-25T21:46:14.416328",
+      "status": "EN_ROUTE"
+    },
+    {
+      "incident_id": "INC-801",
+      "approved_by": "Commander Sarah Vance",
+      "allocated_items": {
+        "RES-102": 15,
+        "RES-105": 4,
+        "RES-109": 2,
+        "RES-108": 15
+      },
+      "details": [
+        "15x Trauma Surgical Kits & Plasma from Logistics Hub Bravo",
+        "4x 500kW Heavy Diesel Generators from Logistics Hub Bravo",
+        "2x Urban Search & Rescue (USAR) Alpha Team from Central Command Depot Alpha",
+        "15x Rapid Deployment Field Triage Tents from Coastal Response Station Charlie"
+      ],
+      "id": "DSP-1787674658852",
+      "dispatched_at": "2026-08-25T21:47:38.852581",
+      "status": "EN_ROUTE"
+    }
+  ]
+}
